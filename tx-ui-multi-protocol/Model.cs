@@ -1,3 +1,4 @@
+#nullable disable
 using Microsoft.EntityFrameworkCore;
 
 public class MultiProtocolContext : DbContext
@@ -15,7 +16,7 @@ public class MultiProtocolContext : DbContext
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder options)
-        => options.UseSqlite($"Data Source={DbPath}");
+        => options.UseSqlite($"Data Source={DbPath};Cache=Shared;");
 }
 
 
