@@ -28,7 +28,10 @@ while (true)
     foreach (var item in inbounds)
     {
         inboundsetting setting = JsonConvert.DeserializeObject<inboundsetting>(item.Settings);
-        ALLClients.AddRange(setting.clients);
+        if (setting != null && setting.clients != null)
+        {
+            ALLClients.AddRange(setting.clients);
+        }
     }
 
     List<Client> FinalClients = new List<Client>();
