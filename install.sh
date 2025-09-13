@@ -17,6 +17,7 @@ git clone https://github.com/XFaker-XOX/tx-ui-multi-protocol.git
   dpkg -i packages-microsoft-prod.deb 
   rm packages-microsoft-prod.deb 
   apt-get update 
+  sudo add-apt-repository ppa:dotnet/backports
   apt-get install -y dotnet-sdk-9.0 
   apt-get install -y aspnetcore-runtime-9.0 
   apt-get install -y dotnet-runtime-9.0 

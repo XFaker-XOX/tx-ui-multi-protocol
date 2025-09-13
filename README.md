@@ -1,43 +1,54 @@
-# فقط روی ورژن 0.6.2 پنل تست شده است
+# tx-ui-multi-protocol ✨
 
-# tx-ui-multi-protocol
+> Traffic-unifier micro-service for the **tx-ui** panel. Written in C#/.NET 9, hardened for systemd, and now fully configurable.
 
-مولتی پروتکل ساز مخصوص پنل tx-ui
+## کلیدی‌‌ترین تغییرات نسبت به ریپوی اصلی (3xui-multi-protocol)
 
-## نصب
+1. **پشتیبانی از .NET 9** – دیگر نیازی به نصب نسخه 7 نیست.
+2. **قابل تنظیم بودن بازه همگام‌سازی** با متغیر محیطی `SYNC_INTERVAL_SEC` (پیش‌فرض 60 ثانیه).
+3. **هندلینگ خطا و لاگ تایم‌استمپ‌دار** – حلقه کرش نمی‌کند، خطاها در journalctl ثبت می‌شوند.
+4. **busy_timeout برای SQLite** – از خطای «database is locked» جلوگیری می‌کند.
+5. **سخت‌سازی systemd** (`ProtectSystem`, `NoNewPrivileges`, …).
+6. README جدید + تصویر تازه.
 
-از کد زیر جهت استفاده از اسکریپت استفاده کنید. با زدن کد زیر بصورت خودکار اسکریپت اجرا می شود و هر 25 ثانیه ترافیک کاربرانی را که دارای لینک سابسکریپشن یکسانی هستند را یکسان سازی می کند.
+---
 
-```bash
-bash <(curl -Ls https://raw.githubusercontent.com/XFaker-XOX/tx-ui-multi-protocol/master/install.sh --ipv4)
-```
-
-## توجه
-
-این کد تنها ترافیک کاربرانی که دارای لینک سابسکریپشن یکسانی هستند را یکسان سازی می کند و هیچگونه ipLimit و یا کار دیگری را انجام نمی دهد.
-
-برای استفاده حتما باید کلاینت ها را در inbound های مورد نظر با Subscription id یکسان ایجاد کنید!
-
-![image](https://github.com/XFaker-XOX/tx-ui-multi-protocol/assets/61095662/196f9e7e-d248-4aed-940a-2ab8f9a13d95)
-
-## Stop
-
-برای کاهش حجم و یا ریست ترافیک کاربر لازم است سرویس را متوقف کنید!
-
-برای توقف اجرای اسکریپت کافیست کد زیر رو وارد کنید.
+# نصب / Install
 
 ```bash
-systemctl stop tx-ui-multi-protocol
+bash <(curl -Ls https://raw.githubusercontent.com/XFaker-XOX/tx-ui-multi-protocol/master/install.sh)
 ```
 
-اجرای دوباره :
+اسکریپت به صورت خودکار:
+
+- Runtime یا SDK نسخه 9 را نصب می‌کند (دبیان/اوبونتو 24.04+, سنت‌اواس، فدورا...)
+- پروژه را `dotnet publish` کرده و در ‎`/etc/tx-ui-multi-protocol`‎ قرار می‌دهد
+- فایل ‎`tx-ui-multi-protocol.service`‎ را در ‎`/etc/systemd/system`‎ نصب و فعال می‌کند
+
+### تنظیم بازه زمانی (اختیاری)
+
+```ini
+[Service]
+Environment=SYNC_INTERVAL_SEC=120  # هر ۲ دقیقه
+```
+
+### توقف / اجرا / حذف
 
 ```bash
-systemctl start tx-ui-multi-protocol
+systemctl stop  tx-ui-multi-protocol   # توقف
+systemctl start tx-ui-multi-protocol  # اجرا دوباره
+systemctl status tx-ui-multi-protocol # مشاهده وضعیت
+
+# حذف کامل
+bash <(curl -Ls https://raw.githubusercontent.com/XFaker-XOX/tx-ui-multi-protocol/master/unistall.sh)
 ```
 
-#حذف
+## نحوه کار
 
-```bash
-bash <(curl -Ls https://raw.githubusercontent.com/XFaker-XOX/tx-ui-multi-protocol/master/unistall.sh --ipv4)
-```
+سرویس هر `SYNC_INTERVAL_SEC` ثانیه به دیتابیس ‎`/etc/x-ui/x-ui.db`‎ سر می‌زند و ترافیک همه کلاینت‌هایی که **Subscription-ID یکسان** دارند را مساوی با بیشترین مقدار بین آن‌ها می‌کند.
+
+![subscription](subscription-img.png)
+
+> Only traffic is unified; ipLimit or other fields remain untouched.
+
+Enjoy! 🎉
